@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('All enviroment') {
             steps {
-                sh 'printenv'
+                sh 'docker info'
             }
         }
         stage('Install dependencies') {
