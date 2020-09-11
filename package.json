@@ -1,0 +1,10 @@
+{
+  "name": "jenkis-b",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/akira-ito/test-nestjs.git",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.27.0"
+  }
+}
