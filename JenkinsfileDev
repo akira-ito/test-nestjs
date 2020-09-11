@@ -1,22 +1,30 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs "node"
+    }
+
     stages {
-        stage('DEVV Build') {
+        stage('All enviroment') {
             steps {
-                echo 'DEVVV..'
                 sh 'printenv'
+            }
+        }
+        stage('Install dependencies') {
+            steps {
                 sh 'npm install'
+                sh 'yarn'
             }
         }
-        stage('AAA Test') {
+        stage('Unit Tests') {
             steps {
-                echo 'Testing..'
+                sh 'yarn test'
             }
         }
-        stage('Deploy') {
+        stage('Integration Tests') {
             steps {
-                echo 'Deploying....'
+                echo 'Testing e2e.'
             }
         }
     }
