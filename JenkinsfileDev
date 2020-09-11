@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('DEVV Build') {
+            steps {
+                echo 'DEVVV..'
+                sh 'printenv'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}
