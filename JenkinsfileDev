@@ -6,6 +6,7 @@ pipeline {
             steps {
                 echo 'DEVVV..'
                 sh 'printenv'
+                sh 'npm install'
             }
         }
         stage('AAA Test') {
