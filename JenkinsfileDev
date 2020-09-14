@@ -1,8 +1,5 @@
 node('master') {
   def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
-  tools {
-    nodejs 'node'
-  }
   
   withEnv(["DOCKER=${dockerTool}/bin"]) {
       stage('Cloning repository.') {
@@ -10,11 +7,15 @@ node('master') {
       }
       
       stage('Installing dependencies.') {
-        sh "yarn"
+        nodejs(nodeJSInstallationName: 'node') {
+          sh "yarn"
+         }
       }
       
       stage('Running unit tests') {
-        sh "yarn test"
+        nodejs(nodeJSInstallationName: 'node13') {
+          sh "yarn test"
+         }
       }
       
       stage('Running unit tests') {
