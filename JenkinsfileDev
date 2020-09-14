@@ -1,6 +1,6 @@
 node('master') {
   def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
-  tool name: 'node', type: 'nodejs'
+  def nodeTool = tool name: 'node', type: 'nodejs'
   
   withEnv(["DOCKER=${dockerTool}/bin"]) {
       stage('Cloning repository.') {
@@ -24,7 +24,7 @@ node('master') {
       }
       
       stage('XX') {
-        sh "echo '${node}'"
+        sh "echo '${nodeTool}'"
       }
   }
 }
