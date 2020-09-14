@@ -15,12 +15,16 @@ node('master') {
       
       stage('Running unit tests') {
         nodejs(nodeJSInstallationName: 'node') {
-          sh "echo 'yarn test'"
+          nodeCmd "yarn test"
          }
       }
       
       stage('Running unit tests') {
-        dockerCmd " ps"
+        dockerCmd "run --name hello hello-world"
+      }
+      
+      stage('Running unit tests') {
+        dockerCmd "stop hello"
       }
     
   }
