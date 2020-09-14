@@ -1,32 +1,13 @@
-pipeline {
-    agent any
+node('master') {
+  def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+  withEnv(["DOCKER=${dockerTool}/bin"]) {
+      stage('Prepare') {
+        deleteDir()
+        checkout scm
+      }
+  }
+}
 
-    tools {
-        nodejs "node"
-        "org.jenkinsci.plugins.docker.commons.tools.DockerTool" "docker"
-    }
-
-    stages {
-        stage('All enviroment') {
-            steps {
-                sh 'docker info'
-            }
-        }
-        stage('Install dependencies') {
-            steps {
-                sh 'npm install'
-                sh 'yarn'
-            }
-        }
-        stage('Unit Tests') {
-            steps {
-                sh 'yarn test'
-            }
-        }
-        stage('Integration Tests') {
-            steps {
-                sh 'docker ps'
-            }
-        }
-    }
+def dockerCmd(args) {
+    sh "sudo ${DOCKER}/docker ${args}"
 }
