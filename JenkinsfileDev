@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { node { label 'docker-agent' } }
 
     tools {
         nodejs "node"
@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Integration Tests') {
             steps {
-                echo 'Testing e2e.'
+                sh 'docker ps'
             }
         }
     }
