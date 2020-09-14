@@ -20,7 +20,7 @@ node('master') {
       }
       
       stage('Running unit tests') {
-        sh "docker ps"
+        sh "${DOCKER}/docker ps"
       }
       
       stage('XX') {
