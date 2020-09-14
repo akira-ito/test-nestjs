@@ -8,7 +8,9 @@ node('master') {
       }
       
       stage('Installing dependencies.') {
-        nodeCmd "yarn"
+        nodejs(nodeJSInstallationName: 'node') {
+          nodeCmd "yarn"
+        }
       }
       
       stage('Running unit tests') {
