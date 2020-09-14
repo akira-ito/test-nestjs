@@ -1,11 +1,10 @@
 pipeline {
-    agent { node { label 'docker-agent' } }
+    agent any
 
     tools {
         nodejs "node"
+        "org.jenkinsci.plugins.docker.commons.tools.DockerTool" "docker"
     }
-    
-    dir ('workspace/Sip Local/DEV Backend') 
 
     stages {
         stage('All enviroment') {
