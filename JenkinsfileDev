@@ -1,5 +1,5 @@
 pipeline {
-    agent { node { label 'docker-agent' } }
+    agent any
 
     tools {
         nodejs "node"
@@ -7,6 +7,7 @@ pipeline {
 
     stages {
         stage('All enviroment') {
+            agent { node { label 'docker-agent' } }
             steps {
                 sh 'docker info'
             }
