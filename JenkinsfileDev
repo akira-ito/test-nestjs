@@ -7,7 +7,7 @@ node('master') {
       }
       
       stage('ps') {
-        dockerCmd 'ps'
+        sh "${DOCKER}/docker ps"
       }
   }
 }
