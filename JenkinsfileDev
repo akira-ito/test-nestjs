@@ -1,13 +1,14 @@
 pipeline {
-    agent any
+    agent { node { label 'docker-agent' } }
 
     tools {
         nodejs "node"
     }
+    
+    dir ('workspace/Sip Local/DEV Backend') 
 
     stages {
         stage('All enviroment') {
-            agent { node { label 'docker-agent' } }
             steps {
                 sh 'docker info'
             }
