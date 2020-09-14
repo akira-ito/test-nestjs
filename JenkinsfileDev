@@ -1,12 +1,22 @@
 node('master') {
   def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+  tool name: 'node', type: 'nodejs'
+  
   withEnv(["DOCKER=${dockerTool}/bin"]) {
-      stage('Prepare') {
+      stage('Cloning repository.') {
         checkout scm
       }
       
-      stage('ps') {
-        sh "${DOCKER}/docker ps"
+      stage('Installing dependencies.') {
+        sh "yarn"
+      }
+      
+      stage('Running unit tests') {
+        sh "yarn test"
+      }
+      
+      stage('Running unit tests') {
+        sh "docker ps"
       }
   }
 }
