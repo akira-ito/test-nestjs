@@ -5,6 +5,10 @@ node('master') {
         deleteDir()
         checkout scm
       }
+      
+      stage('ps') {
+        dockerCmd 'ps'
+      }
   }
 }
 
