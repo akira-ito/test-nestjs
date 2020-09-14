@@ -25,7 +25,8 @@ node('master') {
       dockerSh "docker stop hello"
     }
   }
-  
+}
+
 def dockerSh(args) {
   sh "${DOCKER}/${args}"
 }
