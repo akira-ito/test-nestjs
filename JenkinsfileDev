@@ -26,7 +26,8 @@ node('master') {
     stage('Running unit tests') {
       dockerSh "docker stop hello"
     }
-    stage(‘Docker Purge’) {
+    
+    stage("Docker Purge") {
       steps {
         dockerSh "docker image prune -fa"
         deleteDir()
