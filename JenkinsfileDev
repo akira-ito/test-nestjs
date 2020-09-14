@@ -1,6 +1,8 @@
 node('master') {
   def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
-  tool name: 'node', type: 'nodejs'
+  tools {
+    nodejs 'node'
+  }
   
   withEnv(["DOCKER=${dockerTool}/bin"]) {
       stage('Cloning repository.') {
