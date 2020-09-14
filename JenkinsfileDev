@@ -20,11 +20,11 @@ node('master') {
       }
       
       stage('Running unit tests') {
-        sh "${DOCKER}/docker ps"
+        dockerCmd " ps"
       }
       
       stage('XX') {
-        sh "node init"
+        sh "echo '${node}'"
       }
   }
 }
