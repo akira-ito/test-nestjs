@@ -2,38 +2,28 @@ node('master') {
   def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
   def nodeTool = tool name: 'node', type: 'nodejs'
   
-  withEnv(["DOCKER=${dockerTool}/bin", "NODEJS=${nodeTool}/bin"]) {
-      stage('Cloning repository.') {
-        checkout scm
-      }
-      
-      stage('Installing dependencies.') {
-        nodejs(nodeJSInstallationName: 'node') {
-          nodeCmd "yarn"
-        }
-      }
-      
-      stage('Running unit tests') {
-        nodejs(nodeJSInstallationName: 'node') {
-          nodeCmd "yarn test"
-         }
-      }
-      
-      stage('Running unit tests') {
-        dockerCmd "run --name hello hello-world"
-      }
-      
-      stage('Running unit tests') {
-        dockerCmd "stop hello"
-      }
-    
+  env.PATH="${env.PATH}:${nodeTool}/bin:${dockerTool}"
+  
+  stage('Cloning repository.') {
+    checkout scm
   }
-}
 
-def dockerCmd(args) {
-    sh "${DOCKER}/docker ${args}"
-}
+  stage('Installing dependencies.') {
+    sh 'yarn'
+  }
 
-def nodeCmd(args) {
-    sh "${NODEJS}/${args}"
+  stage('Running unit tests') {
+    nodejs(nodeJSInstallationName: 'node') {
+      sh "yarn test"
+     }
+  }
+
+  stage('Running unit tests') {
+    sh "docker run --name hello hello-world"
+  }
+
+  stage('Running unit tests') {
+    sh "docker stop hello"
+  }
+
 }
