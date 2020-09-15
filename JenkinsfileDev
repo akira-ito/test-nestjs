@@ -1,7 +1,8 @@
 node('master') {
   def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
   def nodeTool = tool name: 'node', type: 'nodejs'
-  def app
+  def dockerImage
+  def registry = "edsonakiraito/sip"
   
   withEnv(["DOCKER=${dockerTool}/bin", "NODEJS=${nodeTool}/bin"]) {
     stage('Cloning repository.') {
@@ -21,20 +22,20 @@ node('master') {
     }
     
     stage('Build image') {
-        app = docker.build("getintodevops/hellonode")
+        dockerImage = docker.build registry+":$BUILD_NUMBER"
     }
 
-    stage('Running unit tests') {
-      dockerSh "docker run --name hello hello-world"
-    }
-
-    stage('Running unit tests') {
-      dockerSh "docker stop hello"
-    }
+    stage('Deploy our image') { 
+        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
+        }
+    } 
     
     stage("Docker Purge") {
       steps {
         dockerSh "docker image prune -fa"
+        dockerSh "docker rmi $registry:$BUILD_NUMBER" 
         deleteDir()
       }
     }
