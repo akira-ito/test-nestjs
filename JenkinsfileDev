@@ -1,6 +1,7 @@
 node('master') {
   def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
   def nodeTool = tool name: 'node', type: 'nodejs'
+  def app
   
   withEnv(["DOCKER=${dockerTool}/bin", "NODEJS=${nodeTool}/bin"]) {
     stage('Cloning repository.') {
@@ -17,6 +18,10 @@ node('master') {
       nodejs(nodeJSInstallationName: 'node') {
         nodeSh "yarn test"
        }
+    }
+    
+    stage('Build image') {
+        app = docker.build("getintodevops/hellonode")
     }
 
     stage('Running unit tests') {
