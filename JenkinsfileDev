@@ -27,11 +27,17 @@ node('master') {
         sh 'chmod 775 ./test/scripts/wait-for-it.sh'
         sh 'bash ./test/scripts/wait-for-it.sh -t 120 docker:1433'
         dockerSh 'docker exec -it mssqlE2E /opt/mssql-tools/bin/sqlcmd -S docker -U sa -P sipV5TestE2E! -d master -i /scripts/setup.sql'
+        nodejs(nodeJSInstallationName: 'node') {
+          yarn test:e2e
+        }
         dockerSh 'docker stop mssqlE2E'
       }
 
       stage('Build image') {
-          dockerImage = docker.build registry+":$BUILD_NUMBER"
+        nodejs(nodeJSInstallationName: 'node') {
+          nodeSh "yarn build"
+        }
+        dockerImage = docker.build registry+":$BUILD_NUMBER"
       }
 
       stage('Deploy our image') { 
