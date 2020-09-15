@@ -33,11 +33,8 @@ node('master') {
     } 
     
     stage("Docker Purge") {
-      steps {
-        dockerSh "docker image prune -fa"
-        dockerSh "docker rmi $registry:$BUILD_NUMBER" 
-        deleteDir()
-      }
+      dockerSh "docker image prune -fa"
+      deleteDir()
     }
 
   }
