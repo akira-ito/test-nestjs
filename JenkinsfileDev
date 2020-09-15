@@ -24,6 +24,9 @@ node('master') {
 
       stage('Running unit e2e') {
         dockerSh 'docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=sipV5TestE2E!" -p 1433:1433 -d --name mssqlE2E --rm -v $WORKSPACE/test/scripts:/scripts mcr.microsoft.com/mssql/server:2017-latest'
+        dir('test/scripts') {
+            sh './wait-for-it.sh -t 5 localhost:1433 '
+        }
         echo 'ghhh'
       }
 
