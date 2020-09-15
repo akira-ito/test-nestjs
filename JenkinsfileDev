@@ -23,12 +23,8 @@ node('master') {
       }
 
       stage('Running unit e2e') {
-        step('dd') {
-          dockerSh 'docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=sipV5TestE2E!" -p 1433:1433 -d --name mssqlE2E --rm -v %cd%/test/scripts:/scripts mcr.microsoft.com/mssql/server:2017-latest'
-        }
-        step('kk') {
-          echo 'ghhh'
-        }
+        dockerSh 'docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=sipV5TestE2E!" -p 1433:1433 -d --name mssqlE2E --rm -v %cd%/test/scripts:/scripts mcr.microsoft.com/mssql/server:2017-latest'
+        echo 'ghhh'
       }
 
       stage('Build image') {
