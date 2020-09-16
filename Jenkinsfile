@@ -1,5 +1,19 @@
 pipeline {
-    agent any
+  agent {
+    any
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh 'npm install'
+      }
+    }
+
+    stage('Test') {
+      steps {
+        echo 'Testing..'
+      }
+    }
 
     stages {
         stage('Build') {
@@ -18,4 +32,10 @@ pipeline {
             }
         }
     }
+
+  }
+  environment {
+    aa = 'ee'
+    adsf = 'ee'
+  }
 }
