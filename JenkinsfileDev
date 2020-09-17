@@ -1,0 +1,82 @@
+node('master') {
+  def dockerTool = tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+  def nodeTool = tool name: 'node', type: 'nodejs'
+  def dockerImage
+  def registry = "edsonakiraito/sip"
+  
+  withEnv(["DOCKER=${dockerTool}/bin", "NODEJS=${nodeTool}/bin"]) {
+    try {
+      stage('Cloning repository.') {
+        checkout scm
+        setBuildStatus("Build complete", "SUCCESS")
+      }
+
+      stage('Installing dependencies.') {
+        nodejs(nodeJSInstallationName: 'node') {
+          nodeSh 'yarn'
+        }
+      }
+
+      stage('Running unit tests') {
+        nodejs(nodeJSInstallationName: 'node') {
+          nodeSh "yarn test"
+         }
+      }
+
+      stage('Running unit e2e') {
+        dockerSh 'docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=sipV5TestE2E!" -p 1433:1433 -d --name mssqlE2E --rm -v "$WORKSPACE/test/scripts:/scripts" mcr.microsoft.com/mssql/server:2017-latest'
+        sh 'chmod 775 ./test/scripts/wait-for-it.sh'
+        sh 'bash ./test/scripts/wait-for-it.sh -t 120 docker:1433'
+        dockerSh 'docker exec -it mssqlE2E /opt/mssql-tools/bin/sqlcmd -S docker -U sa -P sipV5TestE2E! -d master -i /scripts/setup.sql'
+        nodejs(nodeJSInstallationName: 'node') {
+          yarn test:e2e
+        }
+        dockerSh 'docker stop mssqlE2E'
+      }
+
+      stage('Build image') {
+        nodejs(nodeJSInstallationName: 'node') {
+          nodeSh "yarn build"
+        }
+        dockerImage = docker.build registry+":$BUILD_NUMBER"
+      }
+
+      stage('Deploy our image') { 
+          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+              dockerImage.push("${env.BUILD_NUMBER}")
+              dockerImage.push("latest")
+          }
+      } 
+
+      stage("Docker Purge") {
+        dockerSh "docker image prune -fa"
+        deleteDir()
+      }
+    } catch (e) {
+      echo 'This will run only if failed'
+      throw e
+    } finally {
+      def currentResult = currentBuild.result ?: 'SUCCESS'
+      echo currentResult
+      echo 'This will always run'
+    }
+  }
+}
+
+def dockerSh(args) {
+  sh "${DOCKER}/${args}"
+}
+def nodeSh(args) {
+  sh "${NODEJS}/${args}"
+}
+
+void setBuildStatus(String message, String state) {
+  step([
+      $class: "GitHubCommitStatusSetter",
+      reposSource: [$class: "ManuallyEnteredRepositorySource", url: "https://github.com/akira-ito/test-nestjs"],
+      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
+      errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
+  ]);
+}
+
